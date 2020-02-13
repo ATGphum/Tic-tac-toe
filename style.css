@@ -1,0 +1,35 @@
+#screen {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.piece {
+    float: left;
+    border-style: solid;
+    text-align: center;
+    width: 150px;
+    padding-top: 60px;
+    padding-bottom: 60px;
+    font-family: arial, sans-serif;
+    font-size: 30px;
+}
+
+#box3, #box6 {
+    clear: left;
+}
+
+#box0, #box1, #box2 {
+    border-top-style: none;
+}
+
+#box2, #box5, #box8 {
+    border-right-style: none
+}
+
+#box8, #box7, #box6 {
+    border-bottom-style: none;
+}
+
+#box0, #box3, #box6 {
+    border-left-style: none;
+}
