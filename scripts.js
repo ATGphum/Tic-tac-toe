@@ -270,12 +270,28 @@ const ai = (name, symbol) => {
 const game = () => {
     var pl1;
     var pl2;
-    const newGame = (player1, player2) => {
+    var againstAi;
+    var noLosses = 0;
+    /*
+    player1 = the name of the first player
+    player2 = the name of the second player
+    againstAi = boolean for whether or not to make player2 an ai
+    */
+    const newGame = (player1, player2, vsAi) => {
         GameBoard.resetBoard();
         GameBoard.printBoard();
         pl1 = player(player1, "X");
-        pl2 = ai(player2, "O");
+        if(vsAi){
+            pl2 = ai("Ai", "O");
+            againstAi = true;
+        }
+        else{
+            pl2 = player(player2, "O");
+            againstAi = false;
+        }
         pl1.detectInput();
+        const button = document.querySelector('#new');
+        button.addEventListener('click', () => newGame("Phum", "Fiona", true));
     }
    
     var counter = 0; 
@@ -287,11 +303,16 @@ const game = () => {
     const transTurn = () => {
         if(counter % 2 == 0){
             counter++;
-            pl2.choose();
+            if(againstAi){
+                pl2.choose();
+            }
+            else{
+                pl2.detectInput();
+            }
         }
         else if(counter % 2 == 1){
-            pl1.detectInput();
             counter++;
+            pl1.detectInput();
         }
     }    
 
@@ -303,6 +324,9 @@ const game = () => {
             }
             else{
                 winner = pl2.getName();
+                noLosses++;     
+                const losses = document.querySelector('#losses');
+                losses.textContent = "Number of losses: " + noLosses;
             }     
             GameBoard.printBoard();
             console.log(winner);
@@ -315,55 +339,7 @@ const game = () => {
 }
 
 
-/*
-//runs the game
-const game = () => {
-    var pl1;
-    var pl2;
-    const newGame = (player1, player2) => {
-        GameBoard.resetBoard();
-        GameBoard.printBoard();
-        pl1 = player(player1, "X");
-        pl2 = player(player2, "O");
-        pl1.detectInput();
-    }
-   
-    var counter = 0; 
-
-    const currTurn = () => {
-        return counter;
-    }
-
-    const transTurn = () => {
-        if(counter % 2 == 0){
-            pl2.detectInput();
-        }
-        else if(counter % 2 == 1){
-            pl1.detectInput();
-        }
-        counter++;
-    }    
-
-    const checkWin = () => {    
-        if(GameBoard.winState() == true){
-            var winner;
-            if(counter % 2 == 1){
-                winner = pl1.getName();
-            }
-            else{
-                winner = pl2.getName();
-            }     
-            GameBoard.printBoard();
-            console.log(winner);
-        }
-        if(counter == 9){
-            console.log("tie");
-        }
-    }
-    return {newGame, transTurn, checkWin, currTurn};   
-}
-*/
 const currGame = game();
-currGame.newGame("Phum", "Fiona");
+currGame.newGame("Phum", "Fiona", true);
 
 
