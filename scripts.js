@@ -70,6 +70,18 @@ const GameBoard = (() => {
 
 //factory to store player object
 const player = (name, symbol) => {
+    //number of games won
+    var gamesWon = 0;
+    
+    const returnWon = () => {
+        var temp = gamesWon;
+        return temp;
+    }
+    
+    const addWin = () => {
+        gamesWon++;
+    }
+
     const getName = () => name;
 
     const makeMove = (index) => {
@@ -78,11 +90,13 @@ const player = (name, symbol) => {
     }
 
     const detectInput = () => {
-        for(var i = 0; i < 9; i++){
+        for(var i = 0; i < 9; i++){ 
             var box = document.querySelector(`#box${i}`);
+            //box.removeEventListener('click', process);
             box.addEventListener('click', (e) => sendMove(e));
         }
     }
+    
     
     const sendMove = (e) => {
         const id = e.srcElement.id;
@@ -92,11 +106,23 @@ const player = (name, symbol) => {
             currGame.checkWin();
         }
     } 
-    return {getName, makeMove, detectInput}
+    return {getName, makeMove, detectInput, addWin, returnWon}
 } 
 
 const ai = (name, symbol) => {
     const getName = () => name;
+
+    //number of games won
+    var gamesWon = 0;
+    
+    const returnWon = () => {
+        var temp = gamesWon;
+        return temp;
+    }
+    
+    const addWin = () => {
+        gamesWon++;
+    }
 
     const makeMove = (index) => {
         var success = GameBoard.changeSquare(index, symbol);
@@ -262,7 +288,7 @@ const ai = (name, symbol) => {
         currGame.transTurn();
     }
     
-    return {choose, getName};        
+    return {choose, getName, returnWon, addWin};        
 }
 
 
@@ -271,29 +297,56 @@ const game = () => {
     var pl1;
     var pl2;
     var againstAi;
-    var noLosses = 0;
+    var gamesPlayed = -1;
     /*
     player1 = the name of the first player
     player2 = the name of the second player
     againstAi = boolean for whether or not to make player2 an ai
     */
     const newGame = (player1, player2, vsAi) => {
+        console.log(vsAi);
+        gamesPlayed++;
+        counter = 0;
         GameBoard.resetBoard();
         GameBoard.printBoard();
         pl1 = player(player1, "X");
         if(vsAi){
-            pl2 = ai("Ai", "O");
+            pl2 = ai(player2, "O");
             againstAi = true;
         }
         else{
             pl2 = player(player2, "O");
             againstAi = false;
         }
-        pl1.detectInput();
-        const button = document.querySelector('#new');
-        button.addEventListener('click', () => newGame("Phum", "Fiona", true));
+        if(gamesPlayed % 2 == 1 && vsAi){
+                var rand = (Math.random() * 8).toFixed();
+                GameBoard.changeSquare(rand, "O");
+                pl1.detectInput();
+        }
+        else if(gamesPlayed % 2 == 1 && vsAi == false){
+            pl2.detectInput();
+            //adjust the counter
+            counter++;
+        }
+        else{
+            pl1.detectInput();
+        }    
     }
+    const button = document.querySelector('#new');
+    button.addEventListener('click', () => newGame(pl1.getName(), pl2.getName(), againstAi));
    
+    //toggle on the ai and start a new game 
+    const toggle = document.querySelector('#switch');
+    toggle.addEventListener('click', (e) => {
+        if(e.srcElement.checked == true){
+            newGame(pl1.getName(), pl2.getName(), true);
+        }
+        else{
+            newGame(pl1.getName(), pl2.getName(), false);
+        }
+    });
+
+    //number of rounds 
     var counter = 0; 
 
     const currTurn = () => {
@@ -321,12 +374,15 @@ const game = () => {
             var winner;
             if(counter % 2 == 1){
                 winner = pl1.getName();
+                pl1.addWin();
+                const pl1wins = document.querySelector('#pl1wins');
+                pl1wins.textContent = pl1.getName() + ": " + pl1.returnWon();
             }
             else{
                 winner = pl2.getName();
-                noLosses++;     
-                const losses = document.querySelector('#losses');
-                losses.textContent = "Number of losses: " + noLosses;
+                pl2.addWin();
+                const pl2wins = document.querySelector('#pl2wins');
+                pl2wins.textContent = pl2.getName() +  ": " + pl2.returnWon();
             }     
             GameBoard.printBoard();
             console.log(winner);
@@ -340,6 +396,6 @@ const game = () => {
 
 
 const currGame = game();
-currGame.newGame("Phum", "Fiona", true);
+currGame.newGame("Player 1", "Player 2", false);
 
 
