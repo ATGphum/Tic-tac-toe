@@ -40,6 +40,7 @@ const GameBoard = (() => {
 
     //check board to see if there is a win
     const winState = () => {
+        console.log('check');
         if(_board[0] != "<br>" && _board[0] == _board[1] && _board[1] == _board[2]){
             return true;
         }
@@ -64,6 +65,7 @@ const GameBoard = (() => {
         if(_board[2] != "<br>" && _board[2] == _board[4] && _board[4] == _board[6]){
             return true;
         }
+        console.log("gah");
     } 
     return {changeSquare, printBoard, resetBoard, winState, returnBoard};    
 })();
@@ -94,10 +96,29 @@ const player = (name, symbol) => {
             var box = document.querySelector(`#box${i}`);
             //box.removeEventListener('click', process);
             box.addEventListener('click', (e) => sendMove(e));
+            box.addEventListener('mouseover', (e) => appearLetter(e));
+            box.addEventListener('mouseout', (e) => vanishLetter(e));
         }
     }
     
-    
+    //make the player symbol appear when hovering over a square
+    const appearLetter = (e) => {
+        const id = e.srcElement.id.charAt(3);
+        if(GameBoard.returnBoard()[id] == "<br>"){
+            var box = document.querySelector(`#box${id}`);
+            box.textContent = symbol;
+        }
+    }         
+     
+    //make the player symbol disappear when hovering off squat
+    const vanishLetter = (e) => {
+        const id = e.srcElement.id.charAt(3);
+        if(GameBoard.returnBoard()[id] == "<br>"){
+            var box = document.querySelector(`#box${id}`);
+            box.innerHTML = "<br>";
+        }
+    } 
+      
     const sendMove = (e) => {
         const id = e.srcElement.id;
         var success = makeMove(id.charAt(3)); 
@@ -302,21 +323,28 @@ const game = () => {
     player1 = the name of the first player
     player2 = the name of the second player
     againstAi = boolean for whether or not to make player2 an ai
+    complete = boolean for whether to make a complete game reset
     */
-    const newGame = (player1, player2, vsAi) => {
+    const newGame = (player1, player2, vsAi, complete) => {
         console.log(vsAi);
         gamesPlayed++;
         counter = 0;
         GameBoard.resetBoard();
         GameBoard.printBoard();
-        pl1 = player(player1, "X");
-        if(vsAi){
-            pl2 = ai(player2, "O");
-            againstAi = true;
-        }
-        else{
-            pl2 = player(player2, "O");
-            againstAi = false;
+        if(complete){
+            pl1 = player(player1, "X");
+            if(vsAi){
+                pl2 = ai(player2, "O");
+                againstAi = true;
+            }
+            else{
+                pl2 = player(player2, "O");
+                againstAi = false;
+            }
+                const pl1wins = document.querySelector('#pl1wins');
+                pl1wins.textContent = pl1.getName() + ": " + pl1.returnWon();
+                const pl2wins = document.querySelector('#pl2wins');
+                pl2wins.textContent = pl2.getName() +  ": " + pl2.returnWon();
         }
         if(gamesPlayed % 2 == 1 && vsAi){
                 var rand = (Math.random() * 8).toFixed();
@@ -333,16 +361,16 @@ const game = () => {
         }    
     }
     const button = document.querySelector('#new');
-    button.addEventListener('click', () => newGame(pl1.getName(), pl2.getName(), againstAi));
+    button.addEventListener('click', () => newGame(pl1.getName(), pl2.getName(), againstAi, false));
    
     //toggle on the ai and start a new game 
     const toggle = document.querySelector('#switch');
     toggle.addEventListener('click', (e) => {
         if(e.srcElement.checked == true){
-            newGame(pl1.getName(), pl2.getName(), true);
+            newGame(pl1.getName(), pl2.getName(), true, true);
         }
         else{
-            newGame(pl1.getName(), pl2.getName(), false);
+            newGame(pl1.getName(), pl2.getName(), false, true);
         }
     });
 
@@ -396,6 +424,6 @@ const game = () => {
 
 
 const currGame = game();
-currGame.newGame("Player 1", "Player 2", false);
+currGame.newGame("X", "O", false, true);
 
 

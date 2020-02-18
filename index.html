@@ -3,17 +3,22 @@
         <title>Tic Tac Toe</title>
         <link rel="stylesheet" href="style.css">
     </head>
-    <body   >
-        <p>Toggle Ai</p>
-        <label id="switch">
-            <input type="checkbox">
-            <span class="slider round"></span>
-        </label>
-
-        <p id=pl1wins>Player 1: 0</p>
-        <p id=pl2wins>Player 2: 0</p>
-        <button id=new>New Game</button>
+    <body>   
+        <div id=title><h1 id=part1>tic</h1><h1 id=part2>-tac</h1><h1 id=part3>-toe</h1></div>
+        <div id=game>
         <div id=screen></div>   
+        <div id=console>
+            <p id=toggle>Toggle Ai</p>
+            <label id="switch">
+                <input type="checkbox">
+                <span class="slider round"></span>
+            </label>
+
+            <p id=pl1wins>X: 0</p>
+            <p id=pl2wins>O: 0</p>
+            <button id=new>New Game</button> 
+        </div>
+        </div>
 
         <script src="scripts.js"></script>
 
